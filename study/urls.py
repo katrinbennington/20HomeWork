@@ -10,7 +10,7 @@ app_name = StudyConfig.name
 
 
 router = DefaultRouter()
-router.register('сourse', CourseViewSet, basename='сourse')
+router.register('course', CourseViewSet, basename='course')
 
 urlpatterns = [
     path('lesson/create/', LessonCreateAPIView.as_view(), name='moto-create'),
