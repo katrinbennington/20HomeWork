@@ -96,10 +96,11 @@ class PaymentCreateAPIView(CreateAPIView):
     queryset = Payment.objects.all()
 
 
-class PaymentUpdateAPIView(generics.UpdateAPIView):
-    serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
-
-class PaymentDestroyAPIView(generics.DestroyAPIView):
-    serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
+# class PaymentUpdateAPIView(generics.UpdateAPIView):
+#     serializer_class = PaymentSerializer
+#     queryset = Payment.objects.all()
+#
+#
+# class PaymentDestroyAPIView(generics.DestroyAPIView):
+#     serializer_class = PaymentSerializer
+#     queryset = Payment.objects.all()
