@@ -3,6 +3,8 @@ from rest_framework.serializers import ModelSerializer
 
 from study.models import Course, Lesson
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 class CourseSerializer(ModelSerializer):
     lessons = SerializerMethodField()
@@ -16,7 +18,7 @@ class CourseSerializer(ModelSerializer):
 
 
 class LessonSerializer(ModelSerializer):
-    course = CourseSerializer()
+    course = CourseSerializer(read_only=True)
 
     class Meta:
         model = Lesson

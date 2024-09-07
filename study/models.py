@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 from config import settings
 
@@ -11,7 +10,8 @@ class Course(models.Model):
     image = models.ImageField(
         upload_to="courses/photo", verbose_name="Превью", help_text="Загрузите изображение")
     description = models.CharField(max_length=100, verbose_name="Описание")
-
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Владелец',
+                              help_text='Укажите владельца курса')
     def __str__(self):
         return f"{self.name} {self.image} {self.description}"
 
@@ -46,6 +46,8 @@ class Lesson(models.Model):
         verbose_name="Ссылка на видео",
         help_text="Укажите ссылку на видео",
     )
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Владелец', help_text='Укажите владельца урока')
 
     def __str__(self):
         return (

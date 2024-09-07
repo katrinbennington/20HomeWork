@@ -12,6 +12,7 @@ from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import CreateView
 from django_filters.rest_framework import DjangoFilterBackend
+from requests import Response
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView
@@ -23,64 +24,22 @@ from users.models import User, Payment
 #from config.settings import EMAIL_HOST_USER
 from django.views.generic import ListView
 
-from users.serializers import PaymentSerializer
+from users.serializers import PaymentSerializer, MyTokenObtainPairSerializer, UserSerializer
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
-class UserListView(LoginRequiredMixin, ListView):
-    model = User
+class UserCreateAPIView(CreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
 
-class UserCreateView(CreateView):
-    model = User
-    form_class = UserRegisterForm
-    success_url = reverse_lazy("users:login")
-
-    def form_valid(self, form):
-        user = form.save()
-        user.is_active = False
-        token = secrets.token_hex(16)
-        user.token = token
+    def perform_create(self, serializer):
+        user = serializer.save(is_active=True)
+        user.set_password(user.password)
         user.save()
-        host = self.request.get_host()
-        url = f'http://{host}/users/email-confirm/{token}/'
-        send_mail(
-            subject="Подтверждение почты",
-            message=f'Привет, перейди по ссылке для подтверждения почты {url}',
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
-        )
-        return super().form_valid(form)
-
-
-def email_verification(request, token):
-    user = get_object_or_404(User, token=token)
-    user.is_active = True
-    user.save()
-    return redirect(reverse("users:login"))
-
-
-class PasswordResetView(View):
-    form_class = PasswordResetForm
-
-    def get(self, request):
-        form = self.form_class()
-        return render(request, 'users/reset_password.html', {'form': form})
-
-    def post(self, request):
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-            user.password = make_password(new_password)
-            user.save()
-            send_mail(
-                subject='Восстановление пароля',
-                message=f'Здравствуйте, вы запрашивали обновление пароля. Ваш новый пароль: {new_password}',
-                from_email=EMAIL_HOST_USER,
-                recipient_list=[user.email],
-            )
-            return render(request, 'users/password_reset_done.html')
-        except User.DoesNotExist:
-            return render(request, 'users/reset_password.html', {'error': 'Пользователь с таким email не найден.'})
 
 
 class PaymentAPIViewSet(ModelViewSet):
