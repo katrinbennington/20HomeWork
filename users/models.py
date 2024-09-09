@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from study.models import Course, Lesson
+from study.models import Course
 
 NULLABLE = {"blank": True, "null": True}
 
@@ -35,8 +35,8 @@ class Payment(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     date_of_payment = models.DateTimeField(verbose_name='Дата оплаты')
-    payed_course_or_lesson = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс', blank=True,
-                                     null=True)
+    payed_course_or_lesson = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс',
+                                               blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
     type_of_payment = models.CharField(choices=payment_type, verbose_name="Способ оплаты: наличные или перевод на счет.")
 

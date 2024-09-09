@@ -1,17 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework.permissions import IsAuthenticated
 
-from study.models import Course, Lesson
-from study.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer
+
+from study.models import Course, Lesson, Subscription
+from study.paginators import CoursePaginator, LessonPaginator
+from study.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer, SubscriptionSerializer
 from users.permissions import IsModer, IsOwner
-
-from rest_framework.exceptions import ValidationError
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = CoursePaginator
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -27,34 +27,25 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             self.permisson_classes = (~IsModer)
         elif self.action in ["update", "retrieve"]:
-            self.permisson_classes = (IsModer | IsOwner, IsAuthenticated,)
+            self.permisson_classes = (IsModer | IsOwner,)
         elif self.action == "destroy":
-            self.permission_classes = (IsAuthenticated, IsOwner, ~IsModer, )
+            self.permission_classes = (IsOwner, ~IsModer, )
         return super().get_permissions()
 
 
 class LessonCreateAPIView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [~IsModer]
 
     def perform_create(self, serializer):
-        lesson = serializer.save()
-        courses_object_list = list(Course.objects.filter(owner=self.request.user))
-        courses_list = []
-        for course in courses_object_list:
-            courses_list.append(course.id)
-        if lesson.course not in courses_list:
-            raise ValidationError(
-                f"Вы не являетесь модератором!"
-            )
-        lesson.save()
-
-    permission_classes = [IsOwner]
+        serializer.save(owner=self.request.user)
 
 
 class LessonListAPIView(ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = LessonPaginator
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
@@ -77,3 +68,8 @@ class LessonDestroyAPIView(DestroyAPIView):
 
     serializer_class = LessonSerializer
     permission_classes = [IsOwner | ~IsModer]
+
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
