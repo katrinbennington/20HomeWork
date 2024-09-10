@@ -37,12 +37,14 @@ class Payment(models.Model):
     date_of_payment = models.DateTimeField(verbose_name='Дата оплаты')
     payed_course_or_lesson = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс',
                                                blank=True, null=True)
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Cумма оплаты')
     type_of_payment = models.CharField(choices=payment_type, verbose_name="Способ оплаты: наличные или перевод на счет.")
+    payment_link = models.URLField(max_length=400, verbose_name='Cсылка на оплату', blank=True, null=True)
+    payment_id = models.CharField(max_length=255, verbose_name='Id платежа', blank=True, null=True)
 
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 
     def __str__(self):
-        return self.email
+        return str(self.payment_amount)

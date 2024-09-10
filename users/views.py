@@ -11,8 +11,11 @@ from users.serializers import PaymentSerializer, UserSerializer
 
 from rest_framework.permissions import AllowAny
 
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session
+
 
 class UserCreateAPIView(CreateAPIView):
+    """UserCreateAPIView endpoint"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -24,6 +27,7 @@ class UserCreateAPIView(CreateAPIView):
 
 
 class UserListAPIView(ListAPIView):
+    """UserListAPIView endpoint"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -35,6 +39,7 @@ class UserListAPIView(ListAPIView):
 
 
 class UserUpdateAPIView(UpdateAPIView):
+    """UserUpdateAPIView endpoint"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -46,6 +51,7 @@ class UserUpdateAPIView(UpdateAPIView):
 
 
 class UserDestroyAPIView(DestroyAPIView):
+    """UserDestroyAPIView endpoint"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -57,6 +63,7 @@ class UserDestroyAPIView(DestroyAPIView):
 
 
 class PaymentAPIViewSet(ModelViewSet):
+    """PaymentAPIViewSet endpoint"""
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -65,15 +72,27 @@ class PaymentAPIViewSet(ModelViewSet):
 
 
 class PaymentCreateAPIView(CreateAPIView):
+    """PaymentCreateAPIView endpoint"""
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
 
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        stripe_product_id = create_stripe_product(payment)
+        price = create_stripe_price(stripe_product_id)
+        payment_id, payment_link = create_stripe_session(price)
+        payment.payment_id = payment_id
+        payment.payment_link = payment_link
+        payment.save()
+
 
 class PaymentUpdateAPIView(generics.UpdateAPIView):
+    """PaymentUpdateAPIView endpoint"""
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
 
 
 class PaymentDestroyAPIView(generics.DestroyAPIView):
+    """PaymentDestroyAPIView endpoint"""
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
