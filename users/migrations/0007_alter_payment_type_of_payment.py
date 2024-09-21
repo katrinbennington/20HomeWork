@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='payment',
             name='type_of_payment',
-            field=models.IntegerField(verbose_name='Способ оплаты: наличные или перевод на счет.'),
+            field=models.CharField(verbose_name='Способ оплаты: наличные или перевод на счет.'),
         ),
     ]

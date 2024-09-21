@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from study.models import Course
+from study.models import Course, Lesson
 
 NULLABLE = {"blank": True, "null": True}
 
@@ -29,14 +29,10 @@ class Payment(models.Model):
         ("cash", "Наличные"),
         ("transfer", "Перевод на счет"),
     )
-    payment_item = (
-        ("course", "Курс"),
-        ("lesson", "Урок"),
-    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     date_of_payment = models.DateTimeField(verbose_name='Дата оплаты')
-    payed_course_or_lesson = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс',
-                                               blank=True, null=True)
+    payed_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс', **NULLABLE)
+    payed_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='Оплаченный урок', **NULLABLE)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Cумма оплаты')
     type_of_payment = models.CharField(choices=payment_type, verbose_name="Способ оплаты: наличные или перевод на счет.")
     payment_link = models.URLField(max_length=400, verbose_name='Cсылка на оплату', blank=True, null=True)

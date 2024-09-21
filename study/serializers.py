@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
 from study.models import Course, Lesson, Subscription
@@ -8,18 +9,16 @@ from study.validators import VideoValidator
 class CourseSerializer(ModelSerializer):
     lessons = serializers.SerializerMethodField()
     validators = [VideoValidator(field='video')]
-    is_subscription = serializers.SerializerMethodField()
+    is_sub = SerializerMethodField()
 
     def get_lessons(self, course):
         return [lesson.name for lesson in Lesson.objects.filter(course=course)]
 
-    def get_is_subscription(self, course):
+    def get_is_sub(self, obj):
         user = self.context['request'].user
-        subscription = Subscription.objects.filter(course=course.id, user=user.id)
-        if subscription:
-            return True
+        if user.is_authenticated:
+            return Subscription.objects.filter(user=user, course=obj).exists()
         return False
-
     class Meta:
         model = Course
         fields = "__all__"

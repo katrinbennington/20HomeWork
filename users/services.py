@@ -4,12 +4,10 @@ from config.settings import STRIPE_API_KEY
 
 stripe.api_key = STRIPE_API_KEY
 
-
-def create_stripe_product(instance):
-    """ cоздаем stripe продукт. """
-    title_product = f"{instance.payed_course_or_lesson}"
-    stripe_product = stripe.Product.create(name=f"{title_product}")
-    return stripe_product.get("id")
+def create_stripe_product(product_name):
+    """Создаем stripe продукт"""
+    stripe_product = stripe.Product.create(name=product_name)
+    return stripe_product
 
 
 def create_stripe_price(stripe_product_id):

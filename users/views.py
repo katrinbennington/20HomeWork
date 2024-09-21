@@ -57,8 +57,8 @@ class UserDestroyAPIView(DestroyAPIView):
     permission_classes = (AllowAny,)
 
     def perform_create(self, serializer):
-        user = serializer.save(is_active=True)
-        user.set_password(user.password)
+        user = serializer.save()
+        user.set_password(self.request.data.get('password'))
         user.save()
 
 
@@ -67,7 +67,7 @@ class PaymentAPIViewSet(ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('type_of_payment', 'payed_course_or_lesson')
+    filterset_fields = ('type_of_payment',)
     ordering_fields = ('date_of_payment',)
 
 
