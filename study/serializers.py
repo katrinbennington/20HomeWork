@@ -19,6 +19,7 @@ class CourseSerializer(ModelSerializer):
         if user.is_authenticated:
             return Subscription.objects.filter(user=user, course=obj).exists()
         return False
+
     class Meta:
         model = Course
         fields = "__all__"
@@ -27,7 +28,6 @@ class CourseSerializer(ModelSerializer):
 class LessonSerializer(ModelSerializer):
     course = CourseSerializer(read_only=True)
     validators = [VideoValidator(field='video')]
-
 
     class Meta:
         model = Lesson

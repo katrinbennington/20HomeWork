@@ -9,7 +9,8 @@ NULLABLE = {"blank": True, "null": True}
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name="Email address")
-    phone_number = models.CharField(max_length=35, verbose_name="Телефон", **NULLABLE, help_text="Введите номер телефона")
+    phone_number = models.CharField(max_length=35, verbose_name="Телефон", **NULLABLE,
+                                    help_text="Введите номер телефона")
     country = models.CharField(max_length=100, verbose_name="Страна", **NULLABLE)
     avatar = models.ImageField(upload_to="users/photo", verbose_name="Аватар", help_text="Загрузите свой аватар")
 
@@ -34,7 +35,8 @@ class Payment(models.Model):
     payed_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Оплаченный курс', **NULLABLE)
     payed_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='Оплаченный урок', **NULLABLE)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Cумма оплаты')
-    type_of_payment = models.CharField(choices=payment_type, verbose_name="Способ оплаты: наличные или перевод на счет.")
+    type_of_payment = models.CharField(choices=payment_type,
+                                       verbose_name="Способ оплаты: наличные или перевод на счет.")
     payment_link = models.URLField(max_length=400, verbose_name='Cсылка на оплату', blank=True, null=True)
     payment_id = models.CharField(max_length=255, verbose_name='Id платежа', blank=True, null=True)
 

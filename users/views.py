@@ -6,7 +6,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from users.models import User, Payment
 
-
 from users.serializers import PaymentSerializer, UserSerializer
 
 from rest_framework.permissions import AllowAny

@@ -8,6 +8,7 @@ from rest_framework.generics import get_object_or_404
 from config.settings import EMAIL_HOST_USER
 from study.models import Subscription, Course
 
+
 @shared_task
 def add():
     print("Hello")
@@ -35,7 +36,7 @@ def sub_update(pk):
                 subject="Подписка на курс",
                 message=f'Курс "{course.name}" был обновлен',
                 from_email=EMAIL_HOST_USER,
-                recipient_list=[subscriber,],
+                recipient_list=[subscriber, ],
                 fail_silently=False,
             )
         except Exception as e:

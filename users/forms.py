@@ -10,4 +10,5 @@ class UserRegisterForm(UserCreationForm, ):
 
 
 class PasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(label='Email', max_length=254, widget=forms.EmailInput(attrs={'autocomplete': 'email', 'class': 'form-control', 'placeholder': 'Введите ваш email'}))
+    email = forms.EmailField(label='Email', max_length=254, widget=forms.EmailInput(
+        attrs={'autocomplete': 'email', 'class': 'form-control', 'placeholder': 'Введите ваш email'}))
